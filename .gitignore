@@ -1,6 +1,7 @@
 build/
 obj/
 .vscode/
+src/server.c
 
 # Prerequisites
 *.d
