@@ -32,9 +32,10 @@ int http_req_parser(request_t* request, char* comrequest) {
 
     char* tar_token = strtok(target, "/");
     int i = 0;
+    request->reqline.target.target_size = 0;
     while(tar_token != NULL) {
         request->reqline.target.target[i] = (char*)malloc(sizeof(char) * (strlen(tar_token) + 1));
-        request->reqline.target.target[i] = tar_token;
+        strcpy(request->reqline.target.target[i], tar_token);
 
         tar_token = strtok(NULL, "/");
         request->reqline.target.target_size++;
@@ -42,7 +43,7 @@ int http_req_parser(request_t* request, char* comrequest) {
     }
 
 
-    int i = 0;
+    i = 0;
     request->headers.num_headers = 0;
     while(1) {
 
@@ -76,7 +77,13 @@ int http_req_parser(request_t* request, char* comrequest) {
 
 void print_request(request_t* request) {
     printf("\nMethod: %s\n", request->reqline.method);
-    printf("Target: %s\n", request->reqline.target);
+
+    char target[512];
+    for(int i = 0; i < request->reqline.target.target_size; i++) {
+        strcat(target, request->reqline.target.target[i]);
+    }
+    printf("Target: %s\n", target);
+
     printf("Version: %s\n", request->reqline.version);
     for(int i = 0; i < request->headers.num_headers; i++) {
         printf("Header: %s\n", request->headers.header[i]);
