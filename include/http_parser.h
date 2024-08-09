@@ -6,12 +6,21 @@
 #include <string.h>
 
 #define MAX_HEADERS 50
+#define MAX_PATH_SIZE 16
+
 
 struct reqline {
     char method[8];
-    char target[256];
+    struct target target;
     char version[16];
 };
+struct target
+{
+    char* target[MAX_PATH_SIZE];
+    int target_size;
+};
+
+
 // The maximum number of headers is 50
 struct headers {
     char* header[MAX_HEADERS + 1];

@@ -1,20 +1,19 @@
 
 SRC_DIR = src
 OBJ_DIR = obj
-HEADER_DIR = header
+INCLUDE_DIR = include
 BUILD_DIR = build
 
 CC = gcc
-CFLAGS = -Wall -Wextra -I$(HEADER_DIR)
+CFLAGS = -Wall -Wextra -I$(INCLUDE_DIR)
 
 SRCS = $(wildcard src/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
-EXECUTABLE = $(BUILD_DIR)/app
+TARGET = $(BUILD_DIR)/app
 
-all: $(EXECUTABLE)
+all: $(TARGET)
 
-$(EXECUTABLE): $(OBJS)
-	@mkdir -p $(BUILD_DIR)
+$(TARGET): $(OBJS) | $(BUILD_DIR)
 	$(CC) $(OBJS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -22,8 +21,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
+$(BUILD_DIR):
+	@mkdir -p $(BUILD_DIR)
 
 clean:
 	rm -rf $(OBJ_DIR) $(BUILD_DIR)
+
+run: $(TARGET)
+	@./$(TARGET)
 
 .PHONY: all clean

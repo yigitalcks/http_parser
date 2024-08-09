@@ -26,8 +26,21 @@ int http_req_parser(request_t* request, char* comrequest) {
         request->reqbody = NULL;
     }
 
+    char target[512];
     char* token = strtok(comrequest, "\r\n"); // request line
-    sscanf(token, "%s %s %s", request->reqline.method, request->reqline.target, request->reqline.version);
+    sscanf(token, "%s %s %s", request->reqline.method, target, request->reqline.version);
+
+    char* tar_token = strtok(target, "/");
+    int i = 0;
+    while(tar_token != NULL) {
+        request->reqline.target.target[i] = (char*)malloc(sizeof(char) * (strlen(tar_token) + 1));
+        request->reqline.target.target[i] = tar_token;
+
+        tar_token = strtok(NULL, "/");
+        request->reqline.target.target_size++;
+        i++;
+    }
+
 
     int i = 0;
     request->headers.num_headers = 0;
@@ -62,10 +75,9 @@ int http_req_parser(request_t* request, char* comrequest) {
 }
 
 void print_request(request_t* request) {
-    printf("Method: %s\n", request->reqline.method);
+    printf("\nMethod: %s\n", request->reqline.method);
     printf("Target: %s\n", request->reqline.target);
     printf("Version: %s\n", request->reqline.version);
-    printf("Number of headers: %d\n", request->headers.num_headers);
     for(int i = 0; i < request->headers.num_headers; i++) {
         printf("Header: %s\n", request->headers.header[i]);
         printf("Value: %s\n", request->headers.value[i]);
@@ -73,10 +85,13 @@ void print_request(request_t* request) {
     printf("Body: %s\n\n", request->reqbody);
 }
 
-void clean_request(request_t *request) {
+void clean_request(request_t* request) {
     for (int i = 0; i < request->headers.num_headers; i++) {
         free(request->headers.header[i]);
         free(request->headers.value[i]);
+    }
+    for(int i = 0; i < request->reqline.target.target_size; i++) {
+        free(request->reqline.target.target[i]);
     }
     free(request->reqbody);
 }
