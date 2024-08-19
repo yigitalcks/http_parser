@@ -29,7 +29,7 @@ int http_req_parser(request_t* request, char* comrequest) {
     char target[512];
     char* token = strtok(comrequest, "\r\n"); // request line
     sscanf(token, "%s %s %s", request->reqline.method, target, request->reqline.version);
-
+    
     char* tar_token = strtok(target, "/");
     int i = 0;
     request->reqline.target.target_size = 0;
@@ -41,7 +41,7 @@ int http_req_parser(request_t* request, char* comrequest) {
         request->reqline.target.target_size++;
         i++;
     }
-
+    
 
     i = 0;
     request->headers.num_headers = 0;
@@ -92,7 +92,7 @@ void print_request(request_t* request) {
     printf("Body: %s\n\n", request->reqbody);
 }
 
-void clean_request(request_t* request) {
+void free_request(request_t* request) {
     for (int i = 0; i < request->headers.num_headers; i++) {
         free(request->headers.header[i]);
         free(request->headers.value[i]);
