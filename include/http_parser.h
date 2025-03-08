@@ -8,14 +8,9 @@
 #define MAX_HEADERS 50
 #define MAX_PATH_SIZE 32
 
-struct target {
-    char* target[MAX_PATH_SIZE];
-    int target_size;
-};
-
 struct reqline {
     char method[8];
-    struct target target;
+    char target[512];
     char version[16];
 };
 
@@ -24,11 +19,6 @@ struct headers {
     int num_headers;
     char* header[MAX_HEADERS + 1];
     char* value[MAX_HEADERS + 1];
-};
-struct headers2 {
-    char* header[MAX_HEADERS + 1];
-    char* value[MAX_HEADERS + 1];
-    int num_headers;
 };
 
 typedef struct {
@@ -40,6 +30,6 @@ typedef struct {
 
 int http_req_parser(request_t* request, char* comrequest);
 void print_request(request_t* request);
-void clean_request(request_t* request);
+void free_request(request_t* request);
 
 #endif

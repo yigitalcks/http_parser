@@ -25,25 +25,11 @@ int http_req_parser(request_t* request, char* comrequest) {
     else {
         request->reqbody = NULL;
     }
-
-    char target[512];
+    
     char* token = strtok(comrequest, "\r\n"); // request line
-    sscanf(token, "%s %s %s", request->reqline.method, target, request->reqline.version);
-    
-    char* tar_token = strtok(target, "/");
+    sscanf(token, "%s %s %s", request->reqline.method, request->reqline.target, request->reqline.version);
+
     int i = 0;
-    request->reqline.target.target_size = 0;
-    while(tar_token != NULL) {
-        request->reqline.target.target[i] = (char*)malloc(sizeof(char) * (strlen(tar_token) + 1));
-        strcpy(request->reqline.target.target[i], tar_token);
-
-        tar_token = strtok(NULL, "/");
-        request->reqline.target.target_size++;
-        i++;
-    }
-    
-
-    i = 0;
     request->headers.num_headers = 0;
     while(1) {
 
@@ -77,28 +63,20 @@ int http_req_parser(request_t* request, char* comrequest) {
 
 void print_request(request_t* request) {
     printf("\nMethod: %s\n", request->reqline.method);
-
-    char target[512];
-    for(int i = 0; i < request->reqline.target.target_size; i++) {
-        strcat(target, request->reqline.target.target[i]);
-    }
-    printf("Target: %s\n", target);
-
+    printf("Target: %s\n", request->reqline.target);
     printf("Version: %s\n", request->reqline.version);
+
+    printf("Headers: \n");
     for(int i = 0; i < request->headers.num_headers; i++) {
-        printf("Header: %s\n", request->headers.header[i]);
-        printf("Value: %s\n", request->headers.value[i]);
+        printf("\t%s: %s\n", request->headers.header[i], request->headers.value[i]);
     }
-    printf("Body: %s\n\n", request->reqbody);
+    printf("Body:\n\t%s\n", request->reqbody);
 }
 
 void free_request(request_t* request) {
     for (int i = 0; i < request->headers.num_headers; i++) {
         free(request->headers.header[i]);
         free(request->headers.value[i]);
-    }
-    for(int i = 0; i < request->reqline.target.target_size; i++) {
-        free(request->reqline.target.target[i]);
     }
     free(request->reqbody);
 }
